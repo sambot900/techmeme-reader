@@ -1,0 +1,103 @@
+import React from 'react';
+import { TouchableOpacity } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createStackNavigator } from '@react-navigation/stack';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { DrawerParamList, RootStackParamList } from '@/types';
+import { useTheme } from '@/theme';
+
+import TopNewsScreen from '@/screens/TopNewsScreen';
+import NewestScreen from '@/screens/NewestScreen';
+import MoreNewsScreen from '@/screens/MoreNewsScreen';
+import RiverScreen from '@/screens/RiverScreen';
+import EventsScreen from '@/screens/EventsScreen';
+import SavedScreen from '@/screens/SavedScreen';
+import SettingsScreen from '@/screens/SettingsScreen';
+import ArticleScreen from '@/screens/ArticleScreen';
+import ClusterSourcesScreen from '@/screens/ClusterSourcesScreen';
+
+const Drawer = createDrawerNavigator<DrawerParamList>();
+const Stack  = createStackNavigator<RootStackParamList>();
+
+function HamburgerButton() {
+  const navigation = useNavigation();
+  const theme = useTheme();
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+      style={{ marginLeft: 16 }}
+      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+    >
+      <Ionicons name="menu" size={24} color={theme.headerText} />
+    </TouchableOpacity>
+  );
+}
+
+function DrawerNavigator() {
+  const theme = useTheme();
+
+  const screenOptions = {
+    headerStyle: { backgroundColor: theme.headerBackground },
+    headerTintColor: theme.headerText,
+    headerTitleStyle: {
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.header,
+      fontWeight: '600' as const,
+    },
+    headerLeft: () => <HamburgerButton />,
+    drawerStyle: { backgroundColor: theme.surface },
+    drawerLabelStyle: {
+      fontFamily: theme.fontFamily,
+      color: theme.textPrimary,
+      fontSize: theme.fontSize.body,
+    },
+    drawerActiveTintColor: theme.accent,
+    drawerInactiveTintColor: theme.textSecondary,
+  };
+
+  return (
+    <Drawer.Navigator initialRouteName="TopNews" screenOptions={screenOptions}>
+      <Drawer.Screen name="TopNews"  component={TopNewsScreen}  options={{ title: 'Top News' }} />
+      <Drawer.Screen name="Newest"   component={NewestScreen}   options={{ title: 'Newest' }} />
+      <Drawer.Screen name="MoreNews" component={MoreNewsScreen} options={{ title: 'More News' }} />
+      <Drawer.Screen name="River"    component={RiverScreen}    options={{ title: 'River' }} />
+      <Drawer.Screen name="Events"   component={EventsScreen}   options={{ title: 'Events' }} />
+      <Drawer.Screen name="Saved"    component={SavedScreen}    options={{ title: 'Saved' }} />
+      <Drawer.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+    </Drawer.Navigator>
+  );
+}
+
+export function AppNavigator() {
+  const theme = useTheme();
+
+  const stackHeaderOptions = {
+    headerStyle: { backgroundColor: theme.headerBackground },
+    headerTintColor: theme.headerText,
+    headerTitleStyle: {
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.header,
+      fontWeight: '600' as const,
+    },
+  };
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Main" component={DrawerNavigator} />
+        <Stack.Screen
+          name="Article"
+          component={ArticleScreen}
+          options={{ headerShown: true, title: '', ...stackHeaderOptions }}
+        />
+        <Stack.Screen
+          name="ClusterSources"
+          component={ClusterSourcesScreen}
+          options={{ headerShown: true, title: 'All Coverage', ...stackHeaderOptions }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}

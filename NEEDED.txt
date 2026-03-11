@@ -1,0 +1,7 @@
+IMPLEMENTATION REQUIREMENTS
+===========================
+
+1. ARTICLE EXTRACTION (needed before extractor.ts can be implemented)
+   - No action required yet, but once Techmeme parsing is working, test extraction
+     against 5–10 representative article URLs from Techmeme to tune content selectors
+     and paywall detection phrases. Provide those URLs at that time.
