@@ -18,10 +18,26 @@
       },
       "package": "com.techmemereader",
       "versionCode": 1,
-      "permissions": ["INTERNET"]
+      "permissions": [
+        "INTERNET"
+      ]
     },
     "plugins": [
-      "expo-font"
-    ]
+      "expo-font",
+      "expo-asset",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.9.25"
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "44fe6610-3dc6-4333-bc21-d57fb5a36c7c"
+      }
+    }
   }
 }

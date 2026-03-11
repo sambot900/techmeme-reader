@@ -9,7 +9,6 @@
 
 ## Development Practice
 
-- Follow test-driven development: write the test first, then the implementation.
 - Consider user experience at every implementation decision — loading states, error states, empty states, and fallbacks are not afterthoughts.
 - Anticipate and mitigate performance problems: avoid unnecessary re-renders, avoid fetching data that's already cached, avoid blocking the main thread.
 - New implementations must maximally reuse existing store shape, types, and utility patterns before introducing new ones.
@@ -24,23 +23,25 @@
 | Persistence | AsyncStorage via Zustand persist middleware |
 | HTTP | axios |
 | HTML parsing | node-html-parser |
+| Article extraction | Mozilla Readability.js via hidden WebView |
 | In-app browser | react-native-webview |
 
 ## Project Structure
 
 ```
 src/
-  api/          techmeme.ts — feed fetching (verified selectors, fully implemented)
-                extractor.ts — article text extraction + paywall detection (stub)
-  components/   ArticleCard, ArticleList
+  api/          techmeme.ts — feed fetching (verified selectors)
+                extractor.ts — ExtractionResult type definition
+                readabilitySource.ts — Readability.js source inlined for WebView injection
+  components/   ArticleCard, ArticleList, ReadabilityExtractor
   navigation/   AppNavigator (drawer + stack), DrawerContent
   screens/      TopNews, Newest, MoreNews, River, Events, Saved, Settings, Article,
                 ClusterSources
   store/        articlesStore — feed cache per section (not persisted)
-                contentStore — extracted reader content keyed by article ID (not persisted)
+                contentStore — extraction queue + reader content keyed by article ID (not persisted)
                 savedStore — bookmark records (persisted)
                 settingsStore — user preferences (persisted)
-  theme/        colors (light/dark), text size scale
+  theme/        colors (light/dark), text size scale, accent palettes, font families
   types/        all shared types
 ```
 
@@ -95,7 +96,26 @@ Techmeme displays news in clusters: one primary headline per story, with multipl
 - Related source: `Article({ articleId: link.url, section, inlineTitle: link.title, inlineSource: link.source })`
   - `inlineTitle`/`inlineSource` are used by `ArticleScreen` when the article isn't in the feed store
 
-**Article screen navigation rule:** Every article — whether primary or a cluster source — is opened in the same `Article` screen. It attempts reader extraction first. If extraction fails or is paywalled, it falls back to the in-app WebView (`react-native-webview`). Never navigate to an external browser app — all article URLs open inside the app.
+## Article Extraction Architecture
+
+Articles are extracted using Mozilla's Readability.js running inside a hidden off-screen WebView. This approach handles JS-rendered sites (React apps, SPAs) that CSS selectors on raw HTML cannot.
+
+**Flow:**
+1. `ArticleScreen` calls `contentStore.fetchContent(id, url)` — synchronous, just enqueues
+2. `contentStore` adds to `pendingExtractions: Record<string, string>` (id → url)
+3. `ReadabilityExtractor` (mounted in App.tsx root) watches `pendingExtractions`, processes one at a time
+4. Hidden WebView loads the URL with full JS execution
+5. `injectedJavaScript` runs paywall detection (Schema.org LD+JSON + CSS gate selectors), then Readability.parse()
+6. Result posted back via `postMessage` → `completeExtraction(id, result)` updates content store
+7. `ArticleScreen` reactively re-renders with extracted text
+
+**Key files:**
+- `readabilitySource.ts` — Readability.js source as a string constant (~90KB). Auto-generated from `node_modules/@mozilla/readability/Readability.js`
+- `ReadabilityExtractor.tsx` — hidden WebView component, processes queue sequentially
+- `contentStore.ts` — manages `pendingExtractions` queue and `content` cache
+- `extractor.ts` — defines `ExtractionResult` type (legacy CSS extraction code present but unused)
+
+**Article screen navigation rule:** Every article — whether primary or a cluster source — is opened in the same `Article` screen. It attempts reader extraction first. If extraction fails or is paywalled, it auto-falls back to the in-app WebView. Never navigate to an external browser app — all article URLs open inside the app.
 
 ## Visual Display Strategy
 
