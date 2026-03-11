@@ -7,14 +7,12 @@ Not affiliated with Techmeme Inc.
 ## What it does
 
 - Pulls headlines from all five Techmeme sections: Top News, Newest, More News, River, and Events
-- Shows multi-source clusters (same story, different outlets) with one tap
-- Reader mode extracts article text using Mozilla Readability.js — falls back to an in-app browser for paywalled or JS-heavy sites
-- Bookmarks are lightweight references, not full-text snapshots
-- Dark mode by default, with selectable accent colors, fonts, and text sizes
+- Shows multi-source articles/headlines.
+- Browser article to local text in app when possible.
 
-## Build
+## Build APK
 
-Requires Node.js and an [Expo](https://expo.dev) account (free tier).
+Requires Node.js and an [Expo](https://expo.dev) account (free tier or otherwise).
 
 ```bash
 npm install
@@ -51,4 +49,4 @@ npx expo start --dev-client
 
 ## License
 
-Private — not licensed for redistribution.
+This is free and unencumbered software released into the public domain. Do whatever you want with it.
