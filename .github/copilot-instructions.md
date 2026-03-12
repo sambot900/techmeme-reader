@@ -72,7 +72,7 @@ src/
 
 | Section | URL | UA | Key selectors |
 |---|---|---|---|
-| top | `/m` (mobile) | mobile | `ul#top_items` → `a.item.wide` (primary), `a.indented_item.wide` (cluster sources) |
+| top | `/` (desktop) | desktop | `div#topcol1 .clus` → first `.itc1 a.ourh` (primary), subsequent `.itc1 a.ourh` (featured sub-stories), `.bls a` (more coverage) |
 | newest | `/m` (mobile) | mobile | `ul#new_items` → `a.item.wide`; timestamps in `span.ago` |
 | more | `/` (desktop) | desktop | `div#botcol1 .itc1` → `a.ourh` for title, `cite` for source, `.di` for cluster sources |
 | river | `/river` | mobile | `tr.ritem` → td[0] time, td[1] cite + link |

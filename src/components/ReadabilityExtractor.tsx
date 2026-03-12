@@ -76,7 +76,9 @@ const PAYWALL_CHECK_SCRIPT = `
 })();
 `;
 
-const FULL_SCRIPT = PAYWALL_CHECK_SCRIPT + '\n' + INJECTION_SCRIPT;
+// injectedJavaScript on Android requires the script to evaluate to a truthy value
+// or it may not execute. Always append true; at the top level.
+const FULL_SCRIPT = PAYWALL_CHECK_SCRIPT + '\n' + INJECTION_SCRIPT + '\ntrue;';
 
 export default function ReadabilityExtractor() {
   const pendingExtractions = useContentStore(s => s.pendingExtractions);

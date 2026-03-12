@@ -39,13 +39,6 @@ export default function ArticleScreen() {
     }
   }, [activeView, articleId, url, fetchContent]);
 
-  // Prompt to switch to browser when extraction fails or is paywalled
-  useEffect(() => {
-    if (content?.status === 'failed' || content?.status === 'restricted') {
-      setActiveView('browser');
-    }
-  }, [content?.status]);
-
   const renderToggle = () => (
     <View style={[styles.toggle, { backgroundColor: theme.surfaceElevated, borderBottomColor: theme.border }]}>
       {(['reader', 'browser'] as ArticleView[]).map(v => (
@@ -82,7 +75,7 @@ export default function ArticleScreen() {
           </Text>
           <TouchableOpacity onPress={() => setActiveView('browser')} style={[styles.actionBtn, { backgroundColor: theme.accentSoft }]}>
             <Text style={[styles.actionBtnText, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
-              Open in Browser
+              View on External Site
             </Text>
           </TouchableOpacity>
         </View>
@@ -97,7 +90,7 @@ export default function ArticleScreen() {
           </Text>
           <TouchableOpacity onPress={() => setActiveView('browser')} style={[styles.actionBtn, { backgroundColor: theme.accentSoft }]}>
             <Text style={[styles.actionBtnText, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
-              Open in Browser
+              View on External Site
             </Text>
           </TouchableOpacity>
         </View>

@@ -51,7 +51,7 @@ export function ArticleCard({ article, section }: Props) {
               hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
             >
               <Text style={[styles.chipText, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
-                {sourceCount} {sourceCount === 1 ? 'source' : 'sources'}
+                {sourceCount + 1} sources
               </Text>
             </TouchableOpacity>
           )}

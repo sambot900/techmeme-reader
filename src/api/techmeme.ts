@@ -2,13 +2,14 @@ import axios from 'axios';
 import { parse } from 'node-html-parser';
 import { ArticleSummary, TechmemeSection, RelatedLink } from '@/types';
 
-// Verified against live HTML on 2026-03-10.
+// Verified against live HTML on 2026-03-11.
 //
 // Data sources:
-//   top / newest  → https://www.techmeme.com/m  (mobile, server-rendered, no bot gate)
-//   more          → https://www.techmeme.com    (desktop UA required for full layout)
-//   river         → https://www.techmeme.com/river
-//   events        → https://www.techmeme.com/events
+//   top     → https://www.techmeme.com    (desktop UA — topcol1 has full cluster data)
+//   newest  → https://www.techmeme.com/m  (mobile — timestamps visible)
+//   more    → https://www.techmeme.com    (desktop UA required for botcol1 layout)
+//   river   → https://www.techmeme.com/river
+//   events  → https://www.techmeme.com/events
 
 const BASE = 'https://www.techmeme.com';
 
@@ -18,7 +19,7 @@ const DESKTOP_UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 
 export const SECTION_URLS: Record<TechmemeSection, string> = {
-  top:    `${BASE}/m`,
+  top:    BASE,
   newest: `${BASE}/m`,
   more:   BASE,
   river:  `${BASE}/river`,
@@ -88,6 +89,65 @@ function parseMobileList(
   }
 
   return results;
+}
+
+// ─── Top News ─────────────────────────────────────────────────────────────────
+// Desktop HTML: Top News items are in DIV#topcol1, grouped in DIV.clus clusters.
+// Each .clus has one or more .itc1 blocks:
+//   - First .itc1 = primary story (A.ourh headline, CITE source)
+//   - Subsequent .itc1 = featured sub-stories (also A.ourh + CITE)
+//   - First .itc1's SPAN.bls > A = "More:" coverage links (article URL, source name as title)
+function parseTopNews(html: string): ArticleSummary[] {
+  const topcol = parse(html).getElementById('topcol1');
+  if (!topcol) return [];
+
+  return topcol.querySelectorAll('.clus').flatMap(clus => {
+    const itc1s = clus.querySelectorAll('.itc1');
+    if (itc1s.length === 0) return [];
+
+    const primary = itc1s[0];
+    const ourh = primary.querySelector('a.ourh');
+    if (!ourh) return [];
+    const url = ourh.getAttribute('href') ?? '';
+    if (!url.startsWith('http')) return [];
+
+    const title = ourh.textContent?.trim() ?? '';
+    const cite = primary.querySelector('cite');
+    const sourceEl = cite?.querySelector('a');
+    const source = sourceEl?.textContent?.trim() ?? sourceFromCiteText(cite?.textContent ?? '');
+    const sourceUrl = sourceEl?.getAttribute('href') ?? '';
+
+    const relatedLinks: RelatedLink[] = [];
+
+    // Featured sub-stories (subsequent itc1s within the same cluster)
+    for (const itc1 of itc1s.slice(1)) {
+      const subOurh = itc1.querySelector('a.ourh');
+      const subUrl = subOurh?.getAttribute('href') ?? '';
+      if (!subUrl.startsWith('http')) continue;
+      const subCite = itc1.querySelector('cite');
+      const subSourceEl = subCite?.querySelector('a');
+      const subSource = subSourceEl?.textContent?.trim() ?? sourceFromCiteText(subCite?.textContent ?? '');
+      relatedLinks.push({
+        url: subUrl,
+        title: subOurh?.textContent?.trim() ?? subSource,
+        source: subSource,
+      });
+    }
+
+    // "More:" coverage links from primary .bls (source name used as title)
+    const bls = primary.querySelector('.bls');
+    if (bls) {
+      for (const a of bls.querySelectorAll('a')) {
+        const relUrl = a.getAttribute('href') ?? '';
+        if (!relUrl.startsWith('http')) continue;
+        if (relatedLinks.some(r => r.url === relUrl)) continue;
+        const relSource = a.textContent?.trim() ?? '';
+        relatedLinks.push({ url: relUrl, source: relSource, title: relSource });
+      }
+    }
+
+    return [{ id: url, title, url, source, sourceUrl, timestamp: '', relatedLinks }] as ArticleSummary[];
+  });
 }
 
 // ─── More News ────────────────────────────────────────────────────────────────
@@ -182,8 +242,8 @@ function parseEvents(html: string): ArticleSummary[] {
 export async function fetchSection(section: TechmemeSection): Promise<ArticleSummary[]> {
   switch (section) {
     case 'top': {
-      const html = await getHTML(`${BASE}/m`, MOBILE_UA);
-      return parseMobileList(html, 'top_items');
+      const html = await getHTML(BASE, DESKTOP_UA);
+      return parseTopNews(html);
     }
     case 'newest': {
       const html = await getHTML(`${BASE}/m`, MOBILE_UA);
