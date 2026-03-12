@@ -96,7 +96,7 @@ function parseMobileList(
 // Each .clus has one or more .itc1 blocks:
 //   - First .itc1 = primary story (A.ourh headline, CITE source)
 //   - Subsequent .itc1 = featured sub-stories (also A.ourh + CITE)
-//   - First .itc1's SPAN.bls > A = "More:" coverage links (article URL, source name as title)
+//   - Hidden DIV (display:none) contains DIV.di blocks with CITE (source) + A (headline + URL)
 function parseTopNews(html: string): ArticleSummary[] {
   const topcol = parse(html).getElementById('topcol1');
   if (!topcol) return [];
@@ -134,16 +134,22 @@ function parseTopNews(html: string): ArticleSummary[] {
       });
     }
 
-    // "More:" coverage links from primary .bls (source name used as title)
-    const bls = primary.querySelector('.bls');
-    if (bls) {
-      for (const a of bls.querySelectorAll('a')) {
-        const relUrl = a.getAttribute('href') ?? '';
-        if (!relUrl.startsWith('http')) continue;
-        if (relatedLinks.some(r => r.url === relUrl)) continue;
-        const relSource = a.textContent?.trim() ?? '';
-        relatedLinks.push({ url: relUrl, source: relSource, title: '' });
-      }
+    // Expanded coverage: hidden .di blocks each have CITE (source) + A (headline URL)
+    for (const di of clus.querySelectorAll('.di')) {
+      const diAnchors = di.querySelectorAll('a');
+      const articleAnchor = diAnchors[diAnchors.length - 1];
+      const relUrl = articleAnchor?.getAttribute('href') ?? '';
+      if (!relUrl.startsWith('http')) continue;
+      if (relUrl === url) continue; // skip primary
+      if (relatedLinks.some(r => r.url === relUrl)) continue;
+      const diCite = di.querySelector('cite');
+      const diSourceEl = diCite?.querySelector('a');
+      const relSource = diSourceEl?.textContent?.trim() ?? sourceFromCiteText(diCite?.textContent ?? '');
+      relatedLinks.push({
+        url: relUrl,
+        title: articleAnchor?.textContent?.trim() ?? '',
+        source: relSource,
+      });
     }
 
     return [{ id: url, title, url, source, sourceUrl, timestamp: '', relatedLinks }] as ArticleSummary[];
