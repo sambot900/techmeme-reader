@@ -13,9 +13,6 @@ import { useTheme } from '@/theme';
 type RouteProps = RouteProp<RootStackParamList, 'Article'>;
 type Nav = StackNavigationProp<RootStackParamList>;
 
-type RouteProps = RouteProp<RootStackParamList, 'Article'>;
-type Nav = StackNavigationProp<RootStackParamList>;
-
 export default function ArticleScreen() {
   const theme = useTheme();
   const navigation = useNavigation<Nav>();
