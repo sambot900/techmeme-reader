@@ -55,13 +55,6 @@ export default function ClusterSourcesScreen() {
           style={[styles.row, { borderBottomColor: theme.border }]}
           activeOpacity={0.7}
         >
-          {item.isPrimary && (
-            <View style={[styles.badge, { backgroundColor: theme.accentSoft }]}>
-              <Text style={[styles.badgeText, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
-                Primary
-              </Text>
-            </View>
-          )}
           <Text style={[styles.source, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
             {item.source}
           </Text>
@@ -87,16 +80,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  badge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 3,
-    marginBottom: 6,
-  },
-  badgeText: {
-    fontWeight: '600',
   },
   source: {
     marginBottom: 4,

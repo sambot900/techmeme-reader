@@ -47,7 +47,7 @@ export default function ArticleScreen() {
         style={[styles.toggleBtn, { backgroundColor: theme.accentSoft }]}
       >
         <Text style={[styles.toggleText, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
-          {activeView === 'reader' ? 'Browser View' : 'Reader View'}
+          {activeView === 'reader' ? 'Switch to Browser' : 'Switch to Reader'}
         </Text>
       </TouchableOpacity>
       {summary && sourceCount > 1 && (
