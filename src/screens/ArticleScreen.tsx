@@ -25,6 +25,7 @@ export default function ArticleScreen() {
   const title  = summary?.title  ?? inlineTitle  ?? '';
   const source = summary?.source ?? inlineSource ?? '';
   const url    = summary?.url    ?? articleId;   // articleId is the URL for related-link articles
+  const sourceCount = (summary?.relatedLinks?.length ?? 0) + 1;
 
   const content     = useContentStore(s => s.content[articleId]);
   const fetchContent = useContentStore(s => s.fetchContent);
@@ -41,20 +42,24 @@ export default function ArticleScreen() {
 
   const renderToggle = () => (
     <View style={[styles.toggle, { backgroundColor: theme.surfaceElevated, borderBottomColor: theme.border }]}>
-      {(['reader', 'browser'] as ArticleView[]).map(v => (
+      <TouchableOpacity
+        onPress={() => setActiveView(activeView === 'reader' ? 'browser' : 'reader')}
+        style={[styles.toggleBtn, { backgroundColor: theme.accentSoft }]}
+      >
+        <Text style={[styles.toggleText, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
+          {activeView === 'reader' ? 'Browser View' : 'Reader View'}
+        </Text>
+      </TouchableOpacity>
+      {summary && sourceCount > 1 && (
         <TouchableOpacity
-          key={v}
-          onPress={() => setActiveView(v)}
-          style={[styles.toggleBtn, activeView === v && { backgroundColor: theme.accentSoft }]}
+          onPress={() => navigation.navigate('ClusterSources', { articleId, section })}
+          style={[styles.toggleBtn, { backgroundColor: theme.surfaceElevated }]}
         >
-          <Text style={[
-            styles.toggleText,
-            { color: activeView === v ? theme.accent : theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }
-          ]}>
-            {v === 'reader' ? 'Reader' : 'Browser'}
+          <Text style={[styles.toggleText, { color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
+            {sourceCount} {sourceCount === 1 ? 'source' : 'sources'}
           </Text>
         </TouchableOpacity>
-      ))}
+      )}
     </View>
   );
 

@@ -65,9 +65,11 @@ export default function ClusterSourcesScreen() {
           <Text style={[styles.source, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
             {item.source}
           </Text>
-          <Text style={[styles.title, { color: theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
-            {item.title}
-          </Text>
+          {item.title !== item.source && item.title !== '' && (
+            <Text style={[styles.title, { color: theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
+              {item.title}
+            </Text>
+          )}
         </TouchableOpacity>
       )}
     />

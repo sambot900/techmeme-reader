@@ -1,10 +1,9 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { DrawerParamList, RootStackParamList } from '@/types';
 import { useTheme } from '@/theme';
 
@@ -30,7 +29,11 @@ function HamburgerButton() {
       style={{ marginLeft: 16 }}
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
     >
-      <Ionicons name="menu" size={24} color={theme.headerText} />
+      <View style={{ width: 22, height: 18, justifyContent: 'space-between' }}>
+        {[0, 1, 2].map(i => (
+          <View key={i} style={{ height: 2.5, borderRadius: 1, backgroundColor: theme.headerText }} />
+        ))}
+      </View>
     </TouchableOpacity>
   );
 }
