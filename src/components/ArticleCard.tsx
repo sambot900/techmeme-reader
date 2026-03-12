@@ -5,6 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { ArticleSummary, RootStackParamList, TechmemeSection } from '@/types';
 import { useTheme } from '@/theme';
 import { useSavedStore } from '@/store/savedStore';
+import { useHistoryStore } from '@/store/historyStore';
 import { Svg, Path } from 'react-native-svg';
 
 type Nav = StackNavigationProp<RootStackParamList>;
@@ -20,6 +21,7 @@ export function ArticleCard({ article, section }: Props) {
   const isSaved = useSavedStore(s => s.isArticleSaved(article.id));
   const saveArticle = useSavedStore(s => s.saveArticle);
   const unsaveArticle = useSavedStore(s => s.unsaveArticle);
+  const isRead = useHistoryStore(s => s.readIds.includes(article.id));
 
   const sourceCount = article.relatedLinks?.length ?? 0;
 
@@ -35,7 +37,7 @@ export function ArticleCard({ article, section }: Props) {
         </Text>
       ) : null}
 
-      <Text style={[styles.title, { color: theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.title }]}>
+      <Text style={[styles.title, { color: isRead ? theme.textMuted : theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.title }]}>
         {article.title}
       </Text>
 

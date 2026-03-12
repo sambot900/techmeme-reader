@@ -7,6 +7,7 @@ import { RootStackParamList, ArticleView } from '@/types';
 import { useArticlesStore } from '@/store/articlesStore';
 import { useContentStore } from '@/store/contentStore';
 import { useSettingsStore } from '@/store/settingsStore';
+import { useHistoryStore } from '@/store/historyStore';
 import { useTheme } from '@/theme';
 
 type RouteProps = RouteProp<RootStackParamList, 'Article'>;
@@ -33,6 +34,12 @@ export default function ArticleScreen() {
 
   const content     = useContentStore(s => s.content[articleId]);
   const fetchContent = useContentStore(s => s.fetchContent);
+
+  const markRead = useHistoryStore(s => s.markRead);
+
+  useEffect(() => {
+    markRead(articleId);
+  }, [articleId, markRead]);
 
   useEffect(() => {
     navigation.setOptions({ title: source || '' });

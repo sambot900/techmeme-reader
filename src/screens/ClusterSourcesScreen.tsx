@@ -4,6 +4,7 @@ import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/types';
 import { useArticlesStore } from '@/store/articlesStore';
+import { useHistoryStore } from '@/store/historyStore';
 import { useTheme } from '@/theme';
 
 type RouteProps = RouteProp<RootStackParamList, 'ClusterSources'>;
@@ -15,6 +16,7 @@ export default function ClusterSourcesScreen() {
   const { articleId, section } = useRoute<RouteProps>().params;
 
   const summary = useArticlesStore(s => s.articles[section].find(a => a.id === articleId));
+  const readIds = useHistoryStore(s => s.readIds);
 
   if (!summary) {
     return (
@@ -59,7 +61,7 @@ export default function ClusterSourcesScreen() {
             {item.source}
           </Text>
           {item.title !== item.source && item.title !== '' && (
-            <Text style={[styles.title, { color: theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
+            <Text style={[styles.title, { color: readIds.includes(item.id) ? theme.textMuted : theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
               {item.title}
             </Text>
           )}
