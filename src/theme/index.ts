@@ -13,10 +13,10 @@ interface AccentPalette {
 }
 
 export const ACCENTS: Record<AccentColor, AccentPalette> = {
-  blue:   { primary: '#4A9EFF', secondary: '#1A5EB8', tertiary: '#112444' },
+  blue:   { primary: '#3D8EF0', secondary: '#1A5EB8', tertiary: '#112444' },
   purple: { primary: '#9B6DFF', secondary: '#5B3D9E', tertiary: '#1E1030' },
   green:  { primary: '#3DBF7C', secondary: '#1A7A4A', tertiary: '#0E2E1C' },
-  amber:  { primary: '#F5A623', secondary: '#C07B10', tertiary: '#3A2204' },
+  amber:  { primary: '#5BC0EB', secondary: '#2A7FA8', tertiary: '#0E2A3A' },
   red:    { primary: '#FF5C5C', secondary: '#BF2020', tertiary: '#2E0808' },
   teal:   { primary: '#26D7C0', secondary: '#128F7E', tertiary: '#092622' },
 };
@@ -25,7 +25,7 @@ export const ACCENT_LABELS: Record<AccentColor, string> = {
   blue:   'Blue',
   purple: 'Purple',
   green:  'Green',
-  amber:  'Amber',
+  amber:  'Sky',
   red:    'Red',
   teal:   'Teal',
 };

@@ -5,6 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { ArticleSummary, RootStackParamList, TechmemeSection } from '@/types';
 import { useTheme } from '@/theme';
 import { useSavedStore } from '@/store/savedStore';
+import { Svg, Path } from 'react-native-svg';
 
 type Nav = StackNavigationProp<RootStackParamList>;
 
@@ -58,12 +59,16 @@ export function ArticleCard({ article, section }: Props) {
 
           <TouchableOpacity
             onPress={() => isSaved ? unsaveArticle(article.id) : saveArticle(article)}
-            style={[styles.chip, { backgroundColor: isSaved ? theme.accentSoft : theme.surfaceElevated }]}
-            hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={[styles.chipText, { color: isSaved ? theme.accent : theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
-              {isSaved ? 'Saved' : 'Save'}
-            </Text>
+            <Svg width={20} height={20} viewBox="0 0 24 24">
+              <Path
+                d="M5 2h14a1 1 0 0 1 1 1v19.143a.5.5 0 0 1-.766.424L12 18.03l-7.234 4.537A.5.5 0 0 1 4 22.143V3a1 1 0 0 1 1-1z"
+                fill={isSaved ? '#F5C518' : 'none'}
+                stroke={isSaved ? '#F5C518' : theme.textMuted}
+                strokeWidth={2}
+              />
+            </Svg>
           </TouchableOpacity>
         </View>
       </View>
