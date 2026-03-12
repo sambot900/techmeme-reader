@@ -30,6 +30,7 @@ export interface ArticleContent {
   extractedTitle?: string;
   extractedText?: string;
   status: ExtractionStatus;
+  method?: ExtractionMethod;
 }
 
 // A saved bookmark. Stores only what's needed to render the saved list.
@@ -49,7 +50,10 @@ export interface Settings {
   defaultArticleView: ArticleView;
   accentColor: AccentColor;
   fontFamily: FontFamily;
+  devMode: boolean;
 }
+
+export type ExtractionMethod = 'axios' | 'webview';
 
 export type RootStackParamList = {
   Main: undefined;

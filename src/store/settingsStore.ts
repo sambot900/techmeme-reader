@@ -10,6 +10,7 @@ interface SettingsStore extends Settings {
   setDefaultArticleView: (view: ArticleView) => void;
   setAccentColor: (color: AccentColor) => void;
   setFontFamily: (font: FontFamily) => void;
+  toggleDevMode: () => void;
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -21,12 +22,14 @@ export const useSettingsStore = create<SettingsStore>()(
       defaultArticleView: 'reader',
       accentColor: 'blue',
       fontFamily: 'system',
+      devMode: false,
       toggleNightMode: () => set(s => ({ nightMode: !s.nightMode })),
       setTextSize: (textSize) => set({ textSize }),
       setDefaultSection: (defaultSection) => set({ defaultSection }),
       setDefaultArticleView: (defaultArticleView) => set({ defaultArticleView }),
       setAccentColor: (accentColor) => set({ accentColor }),
       setFontFamily: (fontFamily) => set({ fontFamily }),
+      toggleDevMode: () => set(s => ({ devMode: !s.devMode })),
     }),
     {
       name: 'settings-storage',

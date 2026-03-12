@@ -12,12 +12,16 @@ import { useTheme } from '@/theme';
 type RouteProps = RouteProp<RootStackParamList, 'Article'>;
 type Nav = StackNavigationProp<RootStackParamList>;
 
+type RouteProps = RouteProp<RootStackParamList, 'Article'>;
+type Nav = StackNavigationProp<RootStackParamList>;
+
 export default function ArticleScreen() {
   const theme = useTheme();
   const navigation = useNavigation<Nav>();
   const { articleId, section, inlineTitle, inlineSource } = useRoute<RouteProps>().params;
 
   const defaultView = useSettingsStore(s => s.defaultArticleView);
+  const devMode = useSettingsStore(s => s.devMode);
   const [activeView, setActiveView] = useState<ArticleView>(defaultView);
 
   // Resolve title/source — from store if primary article, from inline params if cluster source
@@ -112,9 +116,16 @@ export default function ArticleScreen() {
         <Text style={[styles.readerSource, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
           {source}
         </Text>
-        <Text style={[styles.readerBody, { color: theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
-          {content.extractedText}
-        </Text>
+        {(content.extractedText ?? '').split('\n\n').map((para, i) => (
+          <Text key={i} style={[styles.readerParagraph, { color: theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
+            {para}
+          </Text>
+        ))}
+        {devMode && content.method && (
+          <Text style={[styles.devLabel, { color: theme.textMuted, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
+            reader text by {content.method === 'axios' ? 'axios' : 'WebView'}
+          </Text>
+        )}
       </ScrollView>
     );
   };
@@ -174,8 +185,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontWeight: '500',
   },
-  readerBody: {
+  readerParagraph: {
     lineHeight: 26,
+    marginBottom: 14,
+  },
+  devLabel: {
+    marginTop: 24,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
 });
 

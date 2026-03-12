@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ArticleContent, ArticleSummary } from '@/types';
+import { ArticleContent, ArticleSummary, ExtractionMethod } from '@/types';
 import { ExtractionResult, extractArticle } from '@/api/extractor';
 
 interface ContentStore {
@@ -51,6 +51,7 @@ async function processBgQueue() {
               extractedTitle: result.title,
               extractedText: result.text,
               status: result.status,
+              method: 'axios' as ExtractionMethod,
             },
           },
         }));
@@ -92,7 +93,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
         set(s => ({
           content: {
             ...s.content,
-            [id]: { id, extractedTitle: result.title, extractedText: result.text, status: result.status },
+            [id]: { id, extractedTitle: result.title, extractedText: result.text, status: result.status, method: 'axios' as ExtractionMethod },
           },
         }));
       } else {
@@ -129,6 +130,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
             extractedTitle: result.title,
             extractedText: result.text,
             status: result.status,
+            method: 'webview' as ExtractionMethod,
           },
         },
       };

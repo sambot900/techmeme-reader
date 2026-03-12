@@ -27,19 +27,33 @@ const INJECTION_SCRIPT = `
     var reader = new Readability(documentClone);
     var article = reader.parse();
 
-    if (article && article.textContent && article.textContent.trim().length > 300) {
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        status: 'success',
-        title: article.title || undefined,
-        text: article.textContent.replace(/\\s+/g, ' ').trim(),
-      }));
+    if (article && article.content) {
+      // Parse the HTML content to extract paragraph text with line breaks
+      var div = document.createElement('div');
+      div.innerHTML = article.content;
+      var paragraphs = div.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, blockquote');
+      var text = '';
+      for (var i = 0; i < paragraphs.length; i++) {
+        var t = paragraphs[i].textContent.replace(/\\s+/g, ' ').trim();
+        if (t.length > 20) text += t + '\\n\\n';
+      }
+      text = text.trim();
+      if (text.length > 300) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          status: 'success',
+          title: article.title || undefined,
+          text: text,
+        }));
+      } else {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'failed' }));
+      }
     } else {
       window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'failed' }));
     }
   } catch (e) {
     window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'failed' }));
   }
-  true; // required by react-native-webview
+  true;
 })();
 `;
 
