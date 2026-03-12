@@ -48,11 +48,17 @@ export function ArticleCard({ article, section }: Props) {
           {sourceCount > 0 && (
             <TouchableOpacity
               onPress={() => navigation.navigate('ClusterSources', { articleId: article.id, section })}
-              style={[styles.chip, { backgroundColor: theme.accentSoft }]}
-              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
             >
-              <Text style={[styles.chipText, { color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
-                {sourceCount + 1} sources
+              <Svg width={18} height={18} viewBox="0 0 24 24">
+                <Path
+                  d="M4 7h1V4h13v14H5v-3H4V7zm2-1v12h14V4H6v2zm-2 1h12v12H4V7z"
+                  fill={theme.accent}
+                />
+              </Svg>
+              <Text style={{ color: theme.accent, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small, fontWeight: '600' }}>
+                {sourceCount + 1}
               </Text>
             </TouchableOpacity>
           )}
