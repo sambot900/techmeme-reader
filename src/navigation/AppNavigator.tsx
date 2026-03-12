@@ -48,6 +48,7 @@ function DrawerNavigator() {
       fontFamily: theme.fontFamily,
       fontSize: theme.fontSize.header,
       fontWeight: '600' as const,
+      marginLeft: 4,
     },
     headerLeft: () => <HamburgerButton />,
     drawerStyle: { backgroundColor: theme.surface },
