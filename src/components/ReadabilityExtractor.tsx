@@ -90,6 +90,15 @@ export default function ReadabilityExtractor() {
     return entries.length > 0 ? entries[0] : null;
   }, [pendingExtractions]);
 
+  // Timeout: if WebView doesn't respond within 15s, fail the extraction
+  React.useEffect(() => {
+    if (!current) return;
+    const timer = setTimeout(() => {
+      completeExtraction(current[0], { status: 'failed' });
+    }, 15000);
+    return () => clearTimeout(timer);
+  }, [current, completeExtraction]);
+
   if (!current) return null;
 
   const [id, url] = current;

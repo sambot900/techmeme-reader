@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { ArticleSummary, TechmemeSection } from '@/types';
 import { fetchSection } from '@/api/techmeme';
+import { useContentStore } from '@/store/contentStore';
 
 type SectionMap<T> = Record<TechmemeSection, T>;
 
@@ -35,6 +36,11 @@ export const useArticlesStore = create<ArticlesStore>((set) => ({
         articles: { ...s.articles, [section]: articles },
         loading:  { ...s.loading,  [section]: false },
       }));
+      // Pre-extract the first 3 articles so reader content is ready when tapped
+      const { fetchContent } = useContentStore.getState();
+      for (const a of articles.slice(0, 3)) {
+        fetchContent(a.id, a.url);
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load articles';
       set(s => ({
