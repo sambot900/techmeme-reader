@@ -142,7 +142,7 @@ function parseTopNews(html: string): ArticleSummary[] {
         if (!relUrl.startsWith('http')) continue;
         if (relatedLinks.some(r => r.url === relUrl)) continue;
         const relSource = a.textContent?.trim() ?? '';
-        relatedLinks.push({ url: relUrl, source: relSource, title: relSource });
+        relatedLinks.push({ url: relUrl, source: relSource, title: '' });
       }
     }
 
