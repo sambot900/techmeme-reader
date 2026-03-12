@@ -68,6 +68,16 @@ export default function ArticleScreen() {
           </Text>
         </TouchableOpacity>
       )}
+      {(inlineTitle || inlineSource) && (
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={[styles.toggleBtn, { backgroundColor: theme.surfaceElevated }]}
+        >
+          <Text style={[styles.toggleText, { color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
+            Back to Sources
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 

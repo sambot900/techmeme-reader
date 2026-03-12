@@ -48,7 +48,7 @@ export default function ClusterSourcesScreen() {
       renderItem={({ item }) => (
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate('Article', {
+            navigation.push('Article', {
               articleId: item.id,
               section,
               ...(item.isPrimary ? {} : { inlineTitle: item.title, inlineSource: item.source }),

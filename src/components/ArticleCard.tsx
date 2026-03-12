@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    gap: 6,
+    gap: 16,
   },
   chip: {
     paddingHorizontal: 8,
