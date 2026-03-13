@@ -245,27 +245,71 @@ function parseEvents(html: string): ArticleSummary[] {
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
+// Domains whose articles crash the app during extraction. Filtered from feeds entirely.
+const BLOCKED_DOMAINS = ['nytimes.com'];
+
+function isBlockedUrl(url: string): boolean {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    return BLOCKED_DOMAINS.some(d => host === d || host.endsWith('.' + d));
+  } catch {
+    return false;
+  }
+}
+
+function filterBlocked(articles: ArticleSummary[]): ArticleSummary[] {
+  const result: ArticleSummary[] = [];
+  for (const a of articles) {
+    if (isBlockedUrl(a.url)) {
+      const remaining = (a.relatedLinks ?? []).filter(link => !isBlockedUrl(link.url));
+      if (remaining.length === 0) continue;
+      const promoted = remaining[0];
+      result.push({
+        ...a,
+        id: promoted.url,
+        title: promoted.title,
+        url: promoted.url,
+        source: promoted.source,
+        relatedLinks: remaining.slice(1),
+      });
+    } else {
+      result.push({
+        ...a,
+        relatedLinks: a.relatedLinks?.filter(link => !isBlockedUrl(link.url)),
+      });
+    }
+  }
+  return result;
+}
+
 export async function fetchSection(section: TechmemeSection): Promise<ArticleSummary[]> {
+  let articles: ArticleSummary[];
   switch (section) {
     case 'top': {
       const html = await getHTML(BASE, DESKTOP_UA);
-      return parseTopNews(html);
+      articles = parseTopNews(html);
+      break;
     }
     case 'newest': {
       const html = await getHTML(`${BASE}/m`, MOBILE_UA);
-      return parseMobileList(html, 'new_items');
+      articles = parseMobileList(html, 'new_items');
+      break;
     }
     case 'more': {
       const html = await getHTML(BASE, DESKTOP_UA);
-      return parseMoreNews(html);
+      articles = parseMoreNews(html);
+      break;
     }
     case 'river': {
       const html = await getHTML(`${BASE}/river`, MOBILE_UA);
-      return parseRiver(html);
+      articles = parseRiver(html);
+      break;
     }
     case 'events': {
       const html = await getHTML(`${BASE}/events`, DESKTOP_UA);
-      return parseEvents(html);
+      articles = parseEvents(html);
+      break;
     }
   }
+  return filterBlocked(articles);
 }

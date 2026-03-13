@@ -232,20 +232,6 @@ export default function SettingsScreen() {
         </Text>
       </Row>
 
-      <SectionHeader label="DEVELOPER" theme={theme} />
-
-      <Row theme={theme} last>
-        <Text style={[styles.label, { color: theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
-          Dev Mode
-        </Text>
-        <Switch
-          value={settings.devMode}
-          onValueChange={settings.toggleDevMode}
-          trackColor={{ false: theme.border, true: theme.accentSoft }}
-          thumbColor={settings.devMode ? theme.accent : theme.textMuted}
-        />
-      </Row>
-
     </ScrollView>
   );
 }

@@ -17,7 +17,7 @@ export function ArticleList({ articles, loading, error, onRefresh, section }: Pr
 
   if (loading && articles.length === 0) {
     return (
-      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+      <View style={[styles.centered, { backgroundColor: theme.surface }]}>
         <ActivityIndicator color={theme.accent} size="large" />
       </View>
     );
@@ -25,7 +25,7 @@ export function ArticleList({ articles, loading, error, onRefresh, section }: Pr
 
   if (error && articles.length === 0) {
     return (
-      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+      <View style={[styles.centered, { backgroundColor: theme.surface }]}>
         <Text style={[styles.message, { color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
           {error}
         </Text>
@@ -40,7 +40,7 @@ export function ArticleList({ articles, loading, error, onRefresh, section }: Pr
 
   if (!loading && articles.length === 0) {
     return (
-      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+      <View style={[styles.centered, { backgroundColor: theme.surface }]}>
         <Text style={[styles.message, { color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }]}>
           No articles found.
         </Text>
@@ -53,7 +53,7 @@ export function ArticleList({ articles, loading, error, onRefresh, section }: Pr
       data={articles}
       keyExtractor={item => item.id}
       renderItem={({ item }) => <ArticleCard article={item} section={section} />}
-      style={{ backgroundColor: theme.background }}
+      style={{ backgroundColor: theme.surface }}
       onRefresh={onRefresh}
       refreshing={loading}
     />

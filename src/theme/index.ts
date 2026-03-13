@@ -13,12 +13,12 @@ interface AccentPalette {
 }
 
 export const ACCENTS: Record<AccentColor, AccentPalette> = {
-  blue:   { primary: '#3D8EF0', secondary: '#1A5EB8', tertiary: '#112444' },
-  purple: { primary: '#9B6DFF', secondary: '#5B3D9E', tertiary: '#1E1030' },
-  green:  { primary: '#3DBF7C', secondary: '#1A7A4A', tertiary: '#0E2E1C' },
-  amber:  { primary: '#5BC0EB', secondary: '#2A7FA8', tertiary: '#0E2A3A' },
-  red:    { primary: '#FF5C5C', secondary: '#BF2020', tertiary: '#2E0808' },
-  teal:   { primary: '#26D7C0', secondary: '#128F7E', tertiary: '#092622' },
+  blue:   { primary: '#3D7CC0', secondary: '#2A5A8F', tertiary: '#112444' },
+  purple: { primary: '#8B5FD4', secondary: '#5C3D9E', tertiary: '#1E1030' },
+  green:  { primary: '#2E8C5F', secondary: '#1D6642', tertiary: '#0E2E1C' },
+  amber:  { primary: '#2E86A6', secondary: '#1E6280', tertiary: '#0E2A3A' },
+  red:    { primary: '#C84040', secondary: '#962D2D', tertiary: '#2E0808' },
+  teal:   { primary: '#1F8E7E', secondary: '#146B5E', tertiary: '#092622' },
 };
 
 export const ACCENT_LABELS: Record<AccentColor, string> = {
@@ -45,12 +45,12 @@ interface BasePalette {
 
 const DARK: BasePalette = {
   background:       '#0F0F0F',
-  surface:          '#1A1A1A',
-  surfaceElevated:  '#242424',
+  surface:          '#1E1E1E',
+  surfaceElevated:  '#292929',
   textPrimary:      '#F0F0F0',
-  textSecondary:    '#8A8A8A',
-  textMuted:        '#4A4A4A',
-  border:           '#2C2C2C',
+  textSecondary:    '#9A9A9A',
+  textMuted:        '#606060',
+  border:           '#383838',
   headerBackground: '#141414',
   headerText:       '#F0F0F0',
 };
@@ -121,6 +121,8 @@ export function buildTheme(
   const acc  = ACCENTS[accentColor];
   return {
     ...base,
+    headerBackground: acc.primary,
+    headerText:       '#FFFFFF',
     accent:     acc.primary,
     accentDeep: acc.secondary,
     accentSoft: acc.tertiary,

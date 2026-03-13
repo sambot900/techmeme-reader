@@ -20,7 +20,7 @@ export default function ClusterSourcesScreen() {
 
   if (!summary) {
     return (
-      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+      <View style={[styles.centered, { backgroundColor: theme.surface }]}>
         <Text style={{ color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }}>
           Article not found.
         </Text>
@@ -42,7 +42,7 @@ export default function ClusterSourcesScreen() {
 
   return (
     <FlatList
-      style={{ backgroundColor: theme.background }}
+      style={{ backgroundColor: theme.surface }}
       data={rows}
       keyExtractor={item => item.id}
       renderItem={({ item }) => (

@@ -45,7 +45,7 @@ npx expo start --dev-client
 
 ## Version
 
-0.1.0 — initial build, Android only.
+1.0.0 — Android only.
 
 ## License
 

@@ -16,7 +16,7 @@ export default function SavedScreen() {
 
   if (saved.length === 0) {
     return (
-      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+      <View style={[styles.centered, { backgroundColor: theme.surface }]}>
         <Text style={{ color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize.body }}>
           No saved articles.
         </Text>
@@ -26,7 +26,7 @@ export default function SavedScreen() {
 
   return (
     <FlatList
-      style={{ backgroundColor: theme.background }}
+      style={{ backgroundColor: theme.surface }}
       data={saved}
       keyExtractor={item => item.id}
       renderItem={({ item }) => (

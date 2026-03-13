@@ -19,7 +19,6 @@ export default function ArticleScreen() {
   const { articleId, section, inlineTitle, inlineSource } = useRoute<RouteProps>().params;
 
   const defaultView = useSettingsStore(s => s.defaultArticleView);
-  const devMode = useSettingsStore(s => s.devMode);
   const [activeView, setActiveView] = useState<ArticleView>(defaultView);
 
   // Resolve title/source — from store if primary article, from inline params if cluster source
@@ -135,7 +134,7 @@ export default function ArticleScreen() {
             {para}
           </Text>
         ))}
-        {devMode && content.method && (
+        {content.method && (
           <Text style={[styles.devLabel, { color: theme.textMuted, fontFamily: theme.fontFamily, fontSize: theme.fontSize.small }]}>
             reader text by {content.method === 'axios' ? 'axios' : 'WebView'}
           </Text>

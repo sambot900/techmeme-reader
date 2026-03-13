@@ -115,42 +115,56 @@ function extractText(html: string): { title?: string; text?: string } {
   return { title, text: lines.join('\n\n') };
 }
 
+// Max HTML size we'll attempt to parse (512KB). Anything larger risks OOM on mobile.
+const MAX_HTML_BYTES = 512 * 1024;
+
 export async function extractArticle(url: string): Promise<ExtractionResult> {
-  let html: string;
   try {
-    const response = await axios.get<string>(url, {
-      timeout: 15000,
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-          '(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-      },
-      maxRedirects: 5,
-    });
-    html = response.data as string;
+    let html: string;
+    try {
+      const response = await axios.get<string>(url, {
+        timeout: 15000,
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+            '(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+        },
+        maxRedirects: 5,
+        maxContentLength: MAX_HTML_BYTES,
+      });
+      html = response.data as string;
+    } catch {
+      return { status: 'failed' };
+    }
+
+    // Bail if the response is too large despite the limit (e.g. chunked transfer)
+    if (html.length > MAX_HTML_BYTES) {
+      return { status: 'failed' };
+    }
+
+    // Check structural paywall signals on raw HTML before parsing (fast path)
+    if (detectStructuralPaywall(html)) {
+      return { status: 'restricted' };
+    }
+
+    const { title, text } = extractText(html);
+
+    // Require at least 300 characters of real content
+    if (!text || text.length < 300) {
+      return { status: 'failed' };
+    }
+
+    // Check paywall signals on the extracted text only — avoids false positives
+    // from "subscribe" links in footers/nav on free-access articles
+    if (detectTextPaywall(text)) {
+      return { status: 'restricted' };
+    }
+
+    return { title, text, status: 'success' };
   } catch {
+    // Catch-all: OOM, parse errors, anything — never crash the app
     return { status: 'failed' };
   }
-
-  // Check structural paywall signals on raw HTML before parsing (fast path)
-  if (detectStructuralPaywall(html)) {
-    return { status: 'restricted' };
-  }
-
-  const { title, text } = extractText(html);
-
-  // Require at least 300 characters of real content
-  if (!text || text.length < 300) {
-    return { status: 'failed' };
-  }
-
-  // Check paywall signals on the extracted text only — avoids false positives
-  // from "subscribe" links in footers/nav on free-access articles
-  if (detectTextPaywall(text)) {
-    return { status: 'restricted' };
-  }
-
-  return { title, text, status: 'success' };
 }

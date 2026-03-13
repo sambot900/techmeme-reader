@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TouchableOpacity, View, StyleSheet } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators, TransitionSpecs } from '@react-navigation/stack';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { DrawerParamList, RootStackParamList } from '@/types';
 import { useTheme } from '@/theme';
@@ -16,6 +16,7 @@ import SavedScreen from '@/screens/SavedScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
 import ArticleScreen from '@/screens/ArticleScreen';
 import ClusterSourcesScreen from '@/screens/ClusterSourcesScreen';
+import DrawerContent from '@/navigation/DrawerContent';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 const Stack  = createStackNavigator<RootStackParamList>();
@@ -62,7 +63,11 @@ function DrawerNavigator() {
   };
 
   return (
-    <Drawer.Navigator initialRouteName="TopNews" screenOptions={screenOptions}>
+    <Drawer.Navigator
+      initialRouteName="TopNews"
+      screenOptions={screenOptions}
+      drawerContent={(props) => <DrawerContent {...props} />}
+    >
       <Drawer.Screen name="TopNews"  component={TopNewsScreen}  options={{ title: 'Top News' }} />
       <Drawer.Screen name="Newest"   component={NewestScreen}   options={{ title: 'Newest' }} />
       <Drawer.Screen name="MoreNews" component={MoreNewsScreen} options={{ title: 'More News' }} />
@@ -74,8 +79,31 @@ function DrawerNavigator() {
   );
 }
 
+const quickTransition = {
+  open: {
+    animation: 'timing' as const,
+    config: { duration: 200 },
+  },
+  close: {
+    animation: 'timing' as const,
+    config: { duration: 200 },
+  },
+} as const;
+
 export function AppNavigator() {
   const theme = useTheme();
+
+  const navTheme = useMemo(() => ({
+    ...(theme.isDark ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(theme.isDark ? DarkTheme : DefaultTheme).colors,
+      background: theme.background,
+      card: theme.headerBackground,
+      text: theme.textPrimary,
+      border: theme.border,
+      primary: theme.accent,
+    },
+  }), [theme]);
 
   const stackHeaderOptions = {
     headerStyle: { backgroundColor: theme.headerBackground },
@@ -88,8 +116,17 @@ export function AppNavigator() {
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <NavigationContainer theme={navTheme}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          cardStyle: { backgroundColor: theme.background },
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          transitionSpec: quickTransition,
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+        }}
+      >
         <Stack.Screen name="Main" component={DrawerNavigator} />
         <Stack.Screen
           name="Article"
